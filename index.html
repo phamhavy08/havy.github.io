@@ -3,59 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Web Của Vy</title>
+    <title>Hệ Thống Quản Lý Cửa Hàng Giày - Dashboard</title>
+    <!-- Nhúng thư viện biểu đồ Chart.js qua Mạng Máy Tính (CDN) -->
+    <script src="https://jsdelivr.net"></script>
     <style>
+        :root {
+            --primary: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --background: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            background-color: var(--background);
+            color: var(--text);
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: #333;
+            padding: 20px;
         }
-        .container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
+
+        header {
+            margin-bottom: 30px;
+        }
+
         h1 {
-            color: #4a00e0;
+            margin: 0;
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        p.subtitle {
+            margin: 5px 0 0 0;
+            color: #6b7280;
+        }
+
+        /* Phân hệ giao diện các ô số liệu (Kỹ thuật phần mềm) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #6b7280;
+            font-weight: 600;
             margin-bottom: 10px;
         }
-        p {
-            font-size: 18px;
-            line-height: 1.6;
-        }
-        .btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 24px;
-            background: linear-gradient(to right, #8e2de2, #4a00e0);
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
+
+        .card-value {
+            font-size: 24px;
             font-weight: bold;
-            transition: transform 0.2s;
+            margin-bottom: 5px;
         }
-        .btn:hover {
-            transform: scale(1.05);
+
+        .indicator {
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
+
+        .indicator.up { color: var(--success); }
+        .indicator.down { color: var(--danger); }
+
+        /* Bố cục vùng biểu đồ và danh sách dữ liệu (Hệ thống thông tin) */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-container, .list-container {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-name {
+            font-weight: 500;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.hot { background-color: #fee2e2; color: var(--danger); }
+        .badge.slow { background-color: #f3f4f6; color: #4b5563; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Chào thế giới! 👋</h1>
-        <p>Đây là trang web đầu tiên của <strong>phamhavy08</strong> được chạy trực tiếp trên GitHub Pages.</p>
-        <a href="#" class="btn" onclick="alert('Chúc bạn một ngày vui vẻ! 🎉')">Bấm vào đây nè</a>
+    <div class="dashboard-container">
+        <header>
+            <h1>Hệ Thống Báo Cáo Doanh Thu Cửa Hàng</h1>
+            <p class="subtitle">Áp dụng Hệ thống thông tin & Kỹ thuật phần mềm quản lý kinh doanh kinh doanh giày</p>
+        </header>
+
+        <!-- Thống kê tổng quan dựa trên dữ liệu -->
+        <div class="stats-grid">
+            <div class="card">
+                <div class="card-title">Tổng Doanh Thu (Tháng này)</div>
+                <div class="card-value" id="revenue-val">0 đ</div>
+                <div class="indicator" id="revenue-growth">--</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Tổng Lợi Nhuận (Tháng này)</div>
+                <div class="card-value" id="profit-val">0 đ</div>
+                <div class="indicator" id="profit-growth">--</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Biểu đồ doanh thu trực quan -->
+            <div class="chart-container">
+                <h2>Xu Hướng Doanh Thu Dự Án</h2>
+                <canvas id="revenueChart"></canvas>
+            </div>
+
+            <!-- Thuật toán Hệ thống thông tin phân tích mặt hàng -->
+            <div class="list-container">
+                <h2>Phân Tích Mặt Hàng Kinh Doanh</h2>
+                
+                <div style="margin-bottom: 20px;">
+                    <span style="font-size: 13px; color: #6b7280; font-weight: bold;">🔥 BÁN CHẠY NHẤT</span>
+                    <div class="product-item">
+                        <span class="product-name" id="top-selling-name">Đang tính toán...</span>
+                        <span class="badge hot" id="top-selling-qty">0 đôi</span>
+                    </div>
+                </div>
+
+                <div>
+                    <span style="font-size: 13px; color: #6b7280; font-weight: bold;">🐢 BÁN CHẬM NHẤT</span>
+                    <div class="product-item">
+                        <span class="product-name" id="slow-selling-name">Đang tính toán...</span>
+                        <span class="badge slow" id="slow-selling-qty">0 đôi</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <script>
+        // --- 1. MÔ PHỎNG DỮ LIỆU HỆ THỐNG THÔNG TIN (DATABASE MOCKUP) ---
+        const salesHistory = {
+            lastMonth: { revenue: 45000000, profit: 18000000 },
+            thisMonth: { revenue: 52000000, profit: 22000000 }
+        };
+
+        const shoeInventory = [
+            { id: "G01", name: "Nike Air Force 1", importPrice: 1200000, sellPrice: 2000000, soldQty: 85 },
+            { id: "G02", name: "Adidas UltraBoost", importPrice: 1800000, sellPrice: 3000000, soldQty: 120 },
+            { id: "G03", name: "Jordan 1 Low", importPrice: 2000000, sellPrice: 3500000, soldQty: 14 },
+            { id: "G04", name: "Converse Chuck 70", importPrice: 600000, sellPrice: 1100000, soldQty: 98 },
+            { id: "G05", name: "Puma Suede Classic", importPrice: 800000, sellPrice: 1500000, soldQty: 5 }
+        ];
+
+        // --- 2. CÔNG THỨC TOÁN HỌC & ALGORITHM (KỸ THUẬT PHẦN MỀM) ---
+        
+        // Định dạng tiền tệ VND
+        function formatVND(num) {
+            return num.toLocaleString('vi-VN') + ' đ';
+        }
+
+        // Tính phần trăm tăng giảm
+        function calculateGrowth(current, previous) {
+            const percentage = ((current - previous) / previous) * 100;
+            return {
+                value: Math.abs(percentage).toFixed(1) + '%',
+                isUp: percentage >= 0
+            };
+        }
+
+        // Cập nhật giao diện tổng quát
+        document.getElementById('revenue-val').innerText = formatVND(salesHistory.thisMonth.revenue);
+        document.getElementById('profit-val').innerText = formatVND(salesHistory.thisMonth.profit);
+
+        const revGrowth = calculateGrowth(salesHistory.thisMonth.revenue, salesHistory.lastMonth.revenue);
+        const revElem = document.getElementById('revenue-growth');
+        revElem.innerText = (revGrowth.isUp ? '▲ Tăng ' : '▼ Giảm ') + revGrowth.value + ' so với tháng trước';
+        revElem.className = 'indicator ' + (revGrowth.isUp ? 'up' : 'down');
+
+        const profGrowth = calculateGrowth(salesHistory.thisMonth.profit, salesHistory.lastMonth.profit);
+        const profElem = document.getElementById('profit-growth');
+        profElem.innerText = (profGrowth.isUp ? '▲ Tăng ' : '▼ Giảm ') + profGrowth.value + ' so với tháng trước';
+        profElem.className = 'indicator ' + (profGrowth.isUp ? 'up' : 'down');
+
+        // Tìm mặt hàng bán chạy nhất và chậm nhất bằng thuật toán sắp xếp (Sorting Algorithm)
+        const sortedInventory = [...shoeInventory].sort((a, b) => b.soldQty - a.soldQty);
+        
+        const topProduct = sortedInventory[0];
+        const slowProduct = sortedInventory[sortedInventory.length - 1];
+
+        document.getElementById('top-selling-name').innerText = topProduct.name;
+        document.getElementById('top-selling-qty').innerText = topProduct.soldQty + ' đôi';
+
+        document.getElementById('slow-selling-name').innerText = slowProduct.name;
+        document.getElementById('slow-selling-qty').innerText = slowProduct.soldQty + ' đôi';
+
+        // --- 3. ĐỒ HỌA TRỰC QUAN HÓA DỮ LIỆU BẰNG CHART.JS ---
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: shoeInventory.map(item => item.name),
+                datasets: [{
+                    label: 'Số lượng sản phẩm đã bán',
+                    data: shoeInventory.map(item => item.soldQty),
+                    backgroundColor: '#6366f1',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
